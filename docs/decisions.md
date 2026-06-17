@@ -1,5 +1,18 @@
 # Decision Log — ccteams
 
+## 2026-06-17 — `ccteams list` UX: one-line summaries, color, NO_COLOR/FORCE_COLOR
+
+- Added a short `summary` field to every team.json (uniform noun-phrase, ~one line);
+  `list` (compact, default) now shows `name + summary`, no wrapping, aligned. Full
+  descriptions + tags moved to `list --verbose`. `description` is unchanged (still used
+  by `--verbose` and the /choose-team matcher); `summary` falls back to it when absent.
+- Team names are bold cyan; `*` marks teams needing agent-teams mode.
+- Color gating: `NO_COLOR` > `FORCE_COLOR` > `process.stdout.isTTY`. Diagnosed (Daedalus)
+  that color looked "missing" only because the Claude Code `!` bang-command captures
+  stdout as a pipe (not a TTY) — correct behavior; `FORCE_COLOR=1` shows it anyway.
+- Help text gained an "Agent teams mode" explainer (orchestrated vs. --agent-teams).
+
+
 ## 2026-06-17 — Phase 0 verified: subagent + CLAUDE.md load mechanism works
 
 - Manually placed a sample `frontend` team into `.claude/` and restarted the session.

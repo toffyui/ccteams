@@ -1,5 +1,6 @@
 {
   "name": "debug",
+  "summary": "Reproduce, fix, and regression-test bugs — any stack",
   "description": "Stack-agnostic bug hunting team. Reproduces bugs deterministically, identifies root causes, applies minimal fixes, and adds regression tests. Use when you have a bug to track down and fix.",
   "tags": ["debug", "debugging", "bug", "troubleshooting", "regression", "root-cause"]
 }

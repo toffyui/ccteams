@@ -1,5 +1,6 @@
 {
   "name": "generalist",
+  "summary": "End-to-end feature work — any stack",
   "description": "General-purpose, stack-agnostic team that takes a small feature from idea to shipped: scope → design → build → QA → commit. Use when no stack-specific team fits, when you want end-to-end coverage across the stack, or when starting something new and the right specialists aren't obvious yet. Detects the project's language and conventions automatically.",
   "tags": ["general", "generalist", "fullstack", "feature", "end-to-end", "planning", "architecture", "qa", "shipping", "stack-agnostic"]
 }

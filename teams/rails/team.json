@@ -1,5 +1,6 @@
 {
   "name": "rails",
+  "summary": "Ruby on Rails apps, the conventional way",
   "description": "Ruby on Rails team. Builds and reviews Rails applications using ActiveRecord, conventions-over-configuration, and the full Rails stack. Use for Ruby on Rails projects.",
   "tags": ["rails", "ruby", "activerecord", "rspec", "backend", "fullstack", "mvc"]
 }

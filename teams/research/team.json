@@ -1,5 +1,6 @@
 {
   "name": "research",
+  "summary": "Compare options and recommend — writes no code",
   "description": "Stack-agnostic technical research team. Evaluates technology choices, compares libraries and approaches, and produces a written recommendation with tradeoffs. Use before implementation when choosing a library, architecture pattern, or technical approach. Writes no code.",
   "tags": ["research", "technical-research", "evaluation", "comparison", "tech-selection", "architecture", "tradeoffs"]
 }

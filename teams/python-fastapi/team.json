@@ -1,5 +1,6 @@
 {
   "name": "python-fastapi",
+  "summary": "Async Python APIs with FastAPI + Pydantic",
   "description": "Python FastAPI + Pydantic v2 backend team. Builds and reviews async HTTP APIs with full type coverage, dependency injection, and Pydantic validation. Use for Python projects using FastAPI.",
   "tags": ["python", "fastapi", "pydantic", "async", "api", "backend", "rest"]
 }
