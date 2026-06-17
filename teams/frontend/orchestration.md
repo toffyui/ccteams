@@ -1,4 +1,4 @@
-# Active Team: frontend (ccpm)
+# Active Team: frontend (ccteams)
 
 This project uses the **frontend** team: framework-agnostic UI, UX, and accessibility.
 

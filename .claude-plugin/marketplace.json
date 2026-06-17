@@ -1,11 +1,11 @@
 {
-  "name": "ccpm",
+  "name": "ccteams",
   "owner": { "name": "toffyui" },
   "description": "Agent-team package manager for Claude Code — switch agent teams like nvm switches Node versions.",
   "plugins": [
     {
-      "name": "ccpm",
-      "source": "./plugins/ccpm",
+      "name": "ccteams",
+      "source": "./plugins/ccteams",
       "description": "Slash commands to list, choose, and apply pre-built agent teams to the current project."
     }
   ]

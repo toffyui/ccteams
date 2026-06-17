@@ -1,16 +1,16 @@
 {
-  "name": "ccpm",
+  "name": "ccteams",
   "version": "0.1.0",
   "description": "Claude Code agent-team package manager — like nvm, but for agent teams",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/toffyui/ccpm.git"
+    "url": "git+https://github.com/toffyui/ccteams.git"
   },
   "bin": {
-    "ccpm": "./bin/ccpm.js"
+    "ccteams": "./bin/ccteams.js"
   },
-  "main": "./bin/ccpm.js",
+  "main": "./bin/ccteams.js",
   "engines": {
     "node": ">=18.0.0"
   },

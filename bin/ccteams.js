@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * ccpm — Claude Code agent-team package manager
+ * ccteams — Claude Code agent-team package manager
  *
  * Commands:
  *   list [--json]   List available teams
@@ -53,7 +53,7 @@ if (command === 'list') {
 if (command === 'current') {
   const manifest = readManifest(process.cwd());
   if (!manifest?.appliedTeam) {
-    console.log('No team currently applied. Run: ccpm use <team>');
+    console.log('No team currently applied. Run: ccteams use <team>');
     process.exit(0);
   }
   console.log(`Current team: ${manifest.appliedTeam}`);
@@ -72,7 +72,7 @@ if (command === 'use') {
   const teamName = useArgs[0];
 
   if (!teamName) {
-    console.error('Usage: ccpm use [--agent-teams] <team-name>');
+    console.error('Usage: ccteams use [--agent-teams] <team-name>');
     process.exit(1);
   }
 
@@ -87,14 +87,14 @@ if (command === 'use') {
 
 // ── no args / unknown command ────────────────────────────────────────────────
 const usageText = `
-ccpm — Claude Code agent-team package manager
+ccteams — Claude Code agent-team package manager
 
 Usage:
-  ccpm list                        List all available teams
-  ccpm list --json                 Machine-readable JSON list (for scripts/slash commands)
-  ccpm use <team>                  Apply a team to the current project
-  ccpm use <team> --agent-teams    Apply a team AND enable Claude Code agent-teams mode
-  ccpm current                     Show the currently-applied team
+  ccteams list                        List all available teams
+  ccteams list --json                 Machine-readable JSON list (for scripts/slash commands)
+  ccteams use <team>                  Apply a team to the current project
+  ccteams use <team> --agent-teams    Apply a team AND enable Claude Code agent-teams mode
+  ccteams current                     Show the currently-applied team
 
 Flags:
   --agent-teams   Enable CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 in .claude/settings.json
@@ -102,11 +102,11 @@ Flags:
                   Teams that declare "requiresAgentTeams" set this automatically.
 
 Examples:
-  ccpm list
-  ccpm use frontend
-  ccpm use go-api --agent-teams
-  ccpm use --agent-teams rails
-  ccpm current
+  ccteams list
+  ccteams use frontend
+  ccteams use go-api --agent-teams
+  ccteams use --agent-teams rails
+  ccteams current
 `.trimStart();
 
 if (command === undefined || command === '--help' || command === '-h') {

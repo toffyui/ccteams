@@ -1,10 +1,10 @@
 {
-  "name": "ccpm",
+  "name": "ccteams",
   "description": "Agent-team package manager for Claude Code. Provides slash commands to list, select, and apply pre-built agent teams to the current project.",
   "version": "0.1.0",
   "author": {
-    "name": "ccpm"
+    "name": "ccteams"
   },
-  "homepage": "https://github.com/toffyui/ccpm",
+  "homepage": "https://github.com/toffyui/ccteams",
   "license": "MIT"
 }

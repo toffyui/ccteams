@@ -1,4 +1,4 @@
-# Active Team: next-ts (ccpm)
+# Active Team: next-ts (ccteams)
 
 This project uses the **next-ts** team: Next.js (App Router) + TypeScript + Tailwind.
 

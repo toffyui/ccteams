@@ -1,4 +1,4 @@
-# Active Team: research (ccpm)
+# Active Team: research (ccteams)
 
 This project uses the **research** team: technical evaluation before implementation.
 
@@ -9,7 +9,7 @@ This project uses the **research** team: technical evaluation before implementat
 - tech-researcher produces a written recommendation only. It does not write code,
   edit files, or make implementation decisions beyond the recommendation.
 - After a recommendation is accepted, switch to the appropriate implementation team
-  (e.g., `ccpm use go-api`) and hand the decision there.
+  (e.g., `ccteams use go-api`) and hand the decision there.
 
 ## When NOT to use this team
 - You have already decided on an approach and need it implemented — use a builder team.

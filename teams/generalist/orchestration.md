@@ -1,4 +1,4 @@
-# Active Team: generalist (ccpm)
+# Active Team: generalist (ccteams)
 
 This project uses the **generalist** team: a stack-agnostic team for end-to-end feature work.
 

@@ -1,4 +1,4 @@
-# Active Team: debug (ccpm)
+# Active Team: debug (ccteams)
 
 This project uses the **debug** team: systematic bug reproduction and minimal fixing.
 

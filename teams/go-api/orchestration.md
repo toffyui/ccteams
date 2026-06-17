@@ -1,4 +1,4 @@
-# Active Team: go-api (ccpm)
+# Active Team: go-api (ccteams)
 
 This project uses the **go-api** team: idiomatic Go HTTP APIs.
 

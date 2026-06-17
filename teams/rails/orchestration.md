@@ -1,4 +1,4 @@
-# Active Team: rails (ccpm)
+# Active Team: rails (ccteams)
 
 This project uses the **rails** team: Ruby on Rails, convention-over-configuration.
 

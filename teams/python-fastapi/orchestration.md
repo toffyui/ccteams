@@ -1,4 +1,4 @@
-# Active Team: python-fastapi (ccpm)
+# Active Team: python-fastapi (ccteams)
 
 This project uses the **python-fastapi** team: FastAPI + Pydantic v2 + async Python.
 

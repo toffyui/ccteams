@@ -61,7 +61,7 @@ What could make this recommendation wrong? What should be prototyped or validate
 before committing?
 
 **Next step**
-Tell the user which ccpm team to use for implementation (e.g., "hand this to the
+Tell the user which ccteams team to use for implementation (e.g., "hand this to the
 go-api team to implement").
 
 You do not implement. You do not create files. Your deliverable is this written output.
