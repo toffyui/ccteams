@@ -8,7 +8,7 @@ ccteams is a **CLI**. Everything works from the terminal:
 
 ```bash
 ccteams list                 # see the teams
-ccteams use generalist       # apply one to the current project
+ccteams use <team>           # apply one (e.g. ccteams use go-api) to the current project
 ```
 
 The **Claude Code plugin is optional**. It only adds slash commands so you can do the
