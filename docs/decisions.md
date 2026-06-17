@@ -1,5 +1,15 @@
 # Decision Log — ccteams
 
+## 2026-06-17 — README: CLI-first framing, plugin optional, drop nvm comparison
+
+- Added `ccteams --version` (reads package.json; `--version`/`-V`/`version`).
+- Reframed the README: the CLI is the tool; the Claude Code plugin is an OPTIONAL
+  convenience layer for slash commands (the old "two parts, both needed" was wrong —
+  `ccteams use` works without the plugin). Install split into required CLI / optional
+  plugin. Usage block updated (--details, --agent-teams, --version).
+- Removed the `nvm` comparison everywhere (README x2, backlog) — describe ccteams in its
+  own terms rather than leaning on another tool's brand.
+
 ## 2026-06-17 — `ccteams list` UX: one-line summaries, color, NO_COLOR/FORCE_COLOR
 
 - Added a short `summary` field to every team.json (uniform noun-phrase, ~one line);

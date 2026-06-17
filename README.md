@@ -1,32 +1,39 @@
 # ccteams — Agent-Team Package Manager for Claude Code
 
-Switch between pre-built Claude Code agent teams like `nvm` switches Node versions. An **agent team** is a bundle of subagents (with specific roles, expertise, and behaviors) plus orchestration rules that control how they collaborate — managed as a single unit in your project's `.claude/` directory.
+Apply a pre-built team of Claude Code subagents to your project with one command, and switch teams whenever the work changes. An **agent team** is a bundle of subagents (with specific roles, expertise, and behaviors) plus orchestration rules that control how they collaborate — managed as a single unit in your project's `.claude/` directory.
 
-## Two parts, two installs
+## The CLI is all you need (the plugin is optional)
 
-ccteams ships as **two independent components** you install separately. Both are needed for the full experience:
+ccteams is a **CLI**. Everything works from the terminal:
 
-| Component              | What it does                                         | How you get it                                                                             |
-| ---------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **CLI binary**         | Commands to list, select, and apply teams            | `npm install -g ccteams` (via npm)                                                         |
-| **Claude Code plugin** | Slash commands for the same tasks inside Claude Code | Marketplace: `/plugin marketplace add toffyui/ccteams` + `/plugin install ccteams@ccteams` |
+```bash
+ccteams list                 # see the teams
+ccteams use generalist       # apply one to the current project
+```
 
-Installing the npm CLI **alone** does not give you the slash commands. Installing the plugin **alone** does not give you the `ccteams` command-line tool. You need both to use ccteams fully.
+The **Claude Code plugin is optional**. It only adds slash commands so you can do the
+same things — and pick a team in natural language — from inside Claude Code:
+
+| | What it does | Required? |
+| --- | --- | --- |
+| **CLI** (`ccteams`) | List, apply, and inspect teams from the terminal | **Yes** — this is the tool |
+| **Plugin** (`/ccteams:*`) | `/ccteams:list-teams`, `/ccteams:use-team`, and `/ccteams:choose-team` (natural-language team picker) inside Claude Code | Optional convenience |
 
 ## Install
 
-### Step 1: Install the CLI
+### Install the CLI (required)
 
 ```bash
 npm install -g ccteams
 ccteams list
 ```
 
-Verify it prints available agent teams.
+Verify it prints the available teams. That's enough to use ccteams — apply a team with
+`ccteams use <team>` and restart Claude Code.
 
-### Step 2: Install the Claude Code plugin
+### Install the plugin (optional)
 
-In Claude Code, run:
+Want the slash commands inside Claude Code? Add the marketplace and install the plugin:
 
 ```
 /plugin marketplace add toffyui/ccteams
@@ -34,7 +41,7 @@ In Claude Code, run:
 /reload-plugins
 ```
 
-Or restart Claude Code. The slash commands `/ccteams:list-teams`, `/ccteams:use-team`, and `/ccteams:choose-team` will then be available.
+Or restart Claude Code. The slash commands `/ccteams:list-teams`, `/ccteams:use-team`, and `/ccteams:choose-team` will then be available. (The plugin's skills call the `ccteams` CLI under the hood, so the CLI must be installed too.)
 
 ## Updating
 
@@ -56,13 +63,18 @@ update followed by `/reload-plugins` picks them up.
 ### Command Line (CLI)
 
 ```bash
-ccteams list              # Show all available teams
-ccteams list --json       # JSON output of teams
-ccteams current           # Show the currently active team (if any)
-ccteams use <team-name>   # Apply a team to the current directory
+ccteams list                      # All teams (compact, one line each)
+ccteams list --details            # Full descriptions and tags
+ccteams list --json               # Machine-readable JSON
+ccteams use <team>                # Apply a team to the current project
+ccteams use <team> --agent-teams  # Apply it AND enable agent-teams mode (optional)
+ccteams current                   # Show the currently active team
+ccteams --version                 # Print the version
 ```
 
-### Claude Code (Slash commands)
+After `ccteams use`, **restart Claude Code** so the team loads (see below).
+
+### Claude Code (Slash commands — requires the optional plugin)
 
 ```
 /ccteams:list-teams                    # List available teams
@@ -89,7 +101,7 @@ Run `ccteams list` for the full descriptions and tags, or `/ccteams:choose-team 
 
 ## One team per session (and monorepos)
 
-ccteams applies **one team per project at a time**. `ccteams use <team>` is an exclusive switch — like `nvm` switching Node versions — and applying a new team cleanly replaces the previous one.
+ccteams applies **one team per project at a time**. `ccteams use <team>` is an exclusive switch: applying a new team cleanly replaces the previous one.
 
 This is partly a Claude Code constraint: subagents in `.claude/agents/` are **global to the project** and cannot be scoped to a subdirectory. You can't, for example, have the `next-ts` team active only in `apps/web/` and `go-api` only in `apps/api/` at the same time with isolation.
 
@@ -109,7 +121,7 @@ When you apply a team with `ccteams use <team>` or `/ccteams:use-team <team>`:
 2. A `.claude/active-team.md` file is created, documenting the active team and its purpose.
 3. Your project's `.claude/CLAUDE.md` is updated with an import statement (`@.claude/active-team.md`) to include the team's orchestration rules.
 4. A `.claude/.ccteams-manifest.json` is written to track which team is active and allow clean switching.
-5. If the team requires experimental agent-team features (member messaging, collaboration), `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` is automatically set in `.claude/settings.json`.
+5. If you pass `--agent-teams` (or the team opts in via `"requiresAgentTeams": true`), `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` is set in `.claude/settings.json`. This is optional — without it, the team runs in the normal orchestrated mode.
 
 ccteams includes a **collision guard**: it will refuse to apply a team if any of its agents share a name with agents you've written by hand in `.claude/agents/`. This prevents accidental overwrites.
 

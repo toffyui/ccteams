@@ -3,7 +3,7 @@
 Parked ideas. Ship the core first; build these only when there's real demand.
 
 ## Multiple teams at once / monorepo support
-- Today ccteams applies ONE team per project (`ccteams use` is an exclusive switch, like nvm).
+- Today ccteams applies ONE team per project (`ccteams use` is an exclusive switch).
 - Confirmed Claude Code constraint (via official docs, 2026-06-17): subagents are GLOBAL to a
   project — they CANNOT be scoped to a subdirectory. Nested `.claude/agents/` is not loaded.
   Only CLAUDE.md is path-scoped (loaded along the path to files being edited).
