@@ -6,9 +6,9 @@ Switch between pre-built Claude Code agent teams like `nvm` switches Node versio
 
 ccteams ships as **two independent components** you install separately. Both are needed for the full experience:
 
-| Component | What it does | How you get it |
-|-----------|-------------|---|
-| **CLI binary** | Commands to list, select, and apply teams | `npm install -g ccteams` (via npm) |
+| Component              | What it does                                         | How you get it                                                                             |
+| ---------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **CLI binary**         | Commands to list, select, and apply teams            | `npm install -g ccteams` (via npm)                                                         |
 | **Claude Code plugin** | Slash commands for the same tasks inside Claude Code | Marketplace: `/plugin marketplace add toffyui/ccteams` + `/plugin install ccteams@ccteams` |
 
 Installing the npm CLI **alone** does not give you the slash commands. Installing the plugin **alone** does not give you the `ccteams` command-line tool. You need both to use ccteams fully.
@@ -74,16 +74,16 @@ ccteams use <team-name>   # Apply a team to the current directory
 
 ccteams ships with these teams out of the box. Each is a builder + reviewer pair (except `research`, which is a single read-only researcher).
 
-| Team | What it's for |
-|------|---------------|
-| `generalist` | Stack-agnostic, end-to-end feature team: scope → design → build → QA → ship. Use when no stack-specific team fits or for general cross-stack work. |
-| `next-ts` | Next.js (App Router) + TypeScript + Tailwind — RSC, Server Actions, type-safe data fetching, accessible UI. |
-| `frontend` | Framework-agnostic UI/UX and accessibility — UI work that isn't Next.js-specific, or focused on a11y/responsive/UX quality. |
-| `go-api` | Go HTTP API backend — idiomatic services with `net/http` and `database/sql`. |
-| `python-fastapi` | Python FastAPI + Pydantic v2 — async HTTP APIs with full type coverage and validation. |
-| `rails` | Ruby on Rails — ActiveRecord, convention-over-configuration, the full Rails stack. |
-| `debug` | Stack-agnostic bug hunting — reproduce → root-cause → minimal fix → regression test. |
-| `research` | Stack-agnostic technical research — compare options and produce a written recommendation. Writes no code. |
+| Team             | What it's for                                                                                                                                      |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `generalist`     | Stack-agnostic, end-to-end feature team: scope → design → build → QA → ship. Use when no stack-specific team fits or for general cross-stack work. |
+| `next-ts`        | Next.js (App Router) + TypeScript + Tailwind — RSC, Server Actions, type-safe data fetching, accessible UI.                                        |
+| `frontend`       | Framework-agnostic UI/UX and accessibility — UI work that isn't Next.js-specific, or focused on a11y/responsive/UX quality.                        |
+| `go-api`         | Go HTTP API backend — idiomatic services with `net/http` and `database/sql`.                                                                       |
+| `python-fastapi` | Python FastAPI + Pydantic v2 — async HTTP APIs with full type coverage and validation.                                                             |
+| `rails`          | Ruby on Rails — ActiveRecord, convention-over-configuration, the full Rails stack.                                                                 |
+| `debug`          | Stack-agnostic bug hunting — reproduce → root-cause → minimal fix → regression test.                                                               |
+| `research`       | Stack-agnostic technical research — compare options and produce a written recommendation. Writes no code.                                          |
 
 Run `ccteams list` for the full descriptions and tags, or `/ccteams:choose-team <what you need>` to let Claude pick one for you.
 
@@ -174,7 +174,18 @@ For examples to copy from, see `teams/next-ts/` (a stack-specific team) and `tea
 
 All teams that ship today are **orchestrated**: one lead delegates to specialized subagents that report back independently. This is the simple, predictable default.
 
-ccteams also supports **collaborative** teams — where subagents message each other directly — via `"requiresAgentTeams": true` in `team.json`. That relies on Claude Code's experimental agent-teams feature (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`), which ccteams sets automatically in `.claude/settings.json` when you apply such a team. No collaborative team ships by default, but the format supports authoring one.
+ccteams also supports **collaborative** teams — where subagents message each other directly — via Claude Code's experimental agent-teams feature (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`). ccteams writes that env key into `.claude/settings.json` for you in two cases:
+
+- The team declares `"requiresAgentTeams": true` in its `team.json` — agent-teams mode is enabled automatically whenever you apply it.
+- You pass the `--agent-teams` flag to `ccteams use`, which opts any team into agent-teams mode for that project:
+
+  ```bash
+  ccteams use <team> --agent-teams
+  ```
+
+  The flag is position-agnostic, so `ccteams use --agent-teams <team>` works too.
+
+When ccteams added the env key (either way), it removes it again the next time you switch to a team that doesn't need it. No collaborative team ships by default, but the format supports authoring one.
 
 ## Development / local testing
 
