@@ -6,6 +6,10 @@ Apply a pre-built team of Claude Code subagents to your project with one command
 
 Use ccteams from the terminal, from inside Claude Code, or both — whichever fits your flow.
 
+https://github.com/user-attachments/assets/d6c89e7f-3945-484f-95a5-c69eb73cf035
+
+https://github.com/user-attachments/assets/ff71a9cf-a981-440b-8c35-c783dd559ad1
+
 ```bash
 ccteams list                 # see the teams
 ccteams use <team>           # apply one (e.g. ccteams use go-api) to the current project
