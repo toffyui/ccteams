@@ -2,38 +2,38 @@
 
 Apply a pre-built team of Claude Code subagents to your project with one command, and switch teams whenever the work changes. An **agent team** is a bundle of subagents (with specific roles, expertise, and behaviors) plus orchestration rules that control how they collaborate — managed as a single unit in your project's `.claude/` directory.
 
-## The CLI is all you need (the plugin is optional)
+## Two ways to use it
 
-ccteams is a **CLI**. Everything works from the terminal:
+Use ccteams from the terminal, from inside Claude Code, or both — whichever fits your flow.
 
 ```bash
 ccteams list                 # see the teams
 ccteams use <team>           # apply one (e.g. ccteams use go-api) to the current project
 ```
 
-The **Claude Code plugin is optional**. It only adds slash commands so you can do the
-same things — and pick a team in natural language — from inside Claude Code:
+|                           | How you drive it        |                                                                                                                               |
+| ------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **CLI** (`ccteams`)       | From your terminal      | `ccteams list`, `ccteams use <team>`, `ccteams current`                                                                       |
+| **Plugin** (`/ccteams:*`) | From inside Claude Code | `/ccteams:list-teams`, `/ccteams:use-team`, and `/ccteams:choose-team` — describe what you need and it picks the team for you |
 
-| | What it does | Required? |
-| --- | --- | --- |
-| **CLI** (`ccteams`) | List, apply, and inspect teams from the terminal | **Yes** — this is the tool |
-| **Plugin** (`/ccteams:*`) | `/ccteams:list-teams`, `/ccteams:use-team`, and `/ccteams:choose-team` (natural-language team picker) inside Claude Code | Optional convenience |
+The CLI is the engine, so it's always installed; the plugin adds the in-Claude-Code slash
+commands (its skills call the CLI under the hood). Install one or both.
 
 ## Install
 
-### Install the CLI (required)
+### 1. Install the CLI
 
 ```bash
 npm install -g ccteams
 ccteams list
 ```
 
-Verify it prints the available teams. That's enough to use ccteams — apply a team with
+Verify it prints the available teams. You can already use ccteams now — apply a team with
 `ccteams use <team>` and restart Claude Code.
 
-### Install the plugin (optional)
+### 2. Add the Claude Code plugin
 
-Want the slash commands inside Claude Code? Add the marketplace and install the plugin:
+For slash commands inside Claude Code, add the marketplace and install the plugin:
 
 ```
 /plugin marketplace add toffyui/ccteams
@@ -74,7 +74,7 @@ ccteams --version                 # Print the version
 
 After `ccteams use`, **restart Claude Code** so the team loads (see below).
 
-### Claude Code (Slash commands — requires the optional plugin)
+### Claude Code (slash commands — via the plugin)
 
 ```
 /ccteams:list-teams                    # List available teams
