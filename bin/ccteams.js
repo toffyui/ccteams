@@ -8,12 +8,32 @@
  *   current         Show the currently-applied team
  */
 
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { listTeams } from '../lib/teams.js';
 import { readManifest } from '../lib/manifest.js';
 import { useTeam } from '../lib/use.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
+
+// Read the version from package.json (single source of truth), resolved relative
+// to this file so it works regardless of where ccteams is installed.
+function getVersion() {
+  try {
+    const pkgPath = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'package.json');
+    return JSON.parse(fs.readFileSync(pkgPath, 'utf8')).version ?? 'unknown';
+  } catch {
+    return 'unknown';
+  }
+}
+
+// ── version ───────────────────────────────────────────────────────────────────
+if (command === '--version' || command === '-V' || command === 'version') {
+  console.log(`ccteams ${getVersion()}`);
+  process.exit(0);
+}
 
 // ── list ────────────────────────────────────────────────────────────────────
 if (command === 'list') {
@@ -122,6 +142,7 @@ Usage:
   ccteams use <team>                  Apply a team to the current project
   ccteams use <team> --agent-teams    Apply a team AND enable agent-teams mode
   ccteams current                     Show the currently-applied team
+  ccteams --version                   Print the ccteams version
 
 Flags:
   --agent-teams   Enable CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 in .claude/settings.json
