@@ -108,9 +108,11 @@ You have two options:
 
 **Recommendation:** If your project benefits from consistent team composition (e.g., a shared code style or mandatory QA agents), commit the team. Otherwise, keep it local.
 
-## Creating your own agent team
+## Contributing a team
 
-An agent team lives in `teams/<name>/`:
+ccteams applies the teams bundled in this repo's `teams/` directory. To add a new team,
+contribute it here (open a PR) — there's no separate user-local team registry. A team lives
+in `teams/<name>/`:
 
 ```
 teams/<name>/
