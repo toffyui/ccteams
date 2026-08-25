@@ -1,6 +1,6 @@
 {
   "name": "ccteams",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Apply and switch pre-built teams of Claude Code subagents from the command line",
   "type": "module",
   "repository": {
