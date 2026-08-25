@@ -28,6 +28,16 @@ project's pinned major version and every ORM-returning route has a `response_mod
 app import/boot check plus `pytest` (and any configured `ruff`/`mypy`) were actually run
 with output reproduced verbatim, and the lockfile diff is empty or explicitly justified.
 
+## Deterministic hooks (installed with this team)
+A PostToolUse hook (`.claude/hooks/ccteams-fastapi-check.mjs`) greps every edited
+file for the playbook's mechanical failure patterns — bare `except:`, Pydantic v1
+API (`@validator`/`parse_obj`/`.dict()`), mutable default arguments, blocking calls
+(`time.sleep`/`requests.*`) in async modules — and feeds findings back to the editing
+agent automatically. Treat hook feedback as a playbook gate: the builder fixes it in
+the same turn or states in its report why the flagged line is intentional; the
+reviewer confirms one or the other happened. The hook covers only grep-able rules —
+it does not replace the reviewer's async-correctness analysis or the test run.
+
 ## Working method (mandatory — every agent on this team)
 
 The full method is installed at `.claude/skills/working-method/SKILL.md`; read it

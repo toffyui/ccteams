@@ -29,6 +29,16 @@ first and follow its operating loop." Hold their reports to the playbook's gates
 - The verification recipe's real command output is pasted (migrate + schema diff, tests,
   rubocop, boot check) — a summary is not verification.
 
+## Deterministic hooks (installed with this team)
+A PostToolUse hook (`.claude/hooks/ccteams-rails-check.mjs`) greps every edited file
+for the playbook's mechanical failure patterns — SQL interpolation in `where`,
+`update_attribute`/`update_column`, `save(validate: false)`, `default_scope`, params
+mass-assignment, `Time.now`/`Date.today` — and feeds findings back to the editing
+agent automatically. Treat hook feedback as a playbook gate: the builder fixes it in
+the same turn or states in its report why the flagged line is intentional; the
+reviewer confirms one or the other happened. The hook covers only grep-able rules —
+it does not replace the reviewer's N+1 analysis or the test run.
+
 ## Working method (mandatory — every agent on this team)
 
 The full method is installed at `.claude/skills/working-method/SKILL.md`; read it

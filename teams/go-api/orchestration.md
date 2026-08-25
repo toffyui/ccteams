@@ -27,6 +27,16 @@ diff empty or explicitly justified); every returned error handled or wrapped wit
 every error-response followed by `return`; `go build`, `go vet`, and `go test -race` were
 actually run with their output reproduced verbatim.
 
+## Deterministic hooks (installed with this team)
+A PostToolUse hook (`.claude/hooks/ccteams-go-check.mjs`) greps every edited file for
+the playbook's mechanical failure patterns — `http.Error` without `return`,
+`fmt.Errorf` wrapping with `%v` instead of `%w`, errors discarded with `_`,
+`context.Background()` mid-request — and feeds findings back to the editing agent
+automatically. Treat hook feedback as a playbook gate: the builder fixes it in the
+same turn or states in its report why the flagged line is intentional; the reviewer
+confirms one or the other happened. The hook covers only grep-able rules — it does
+not replace the reviewer's race/leak analysis or the build/vet/test run.
+
 ## Working method (mandatory — every agent on this team)
 
 The full method is installed at `.claude/skills/working-method/SKILL.md`; read it

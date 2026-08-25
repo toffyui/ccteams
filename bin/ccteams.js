@@ -138,6 +138,7 @@ if (command === 'current') {
   }
   console.log(`Current team: ${manifest.appliedTeam}`);
   console.log(`Applied at  : ${manifest.appliedAt}`);
+  console.log(`Profile     : ${manifest.profile ?? 'balanced'}`);
   console.log(`Files placed: ${manifest.placedFiles?.length ?? 0}`);
   notifyIfUpdate();
   process.exit(0);
@@ -145,19 +146,34 @@ if (command === 'current') {
 
 // ── use ──────────────────────────────────────────────────────────────────────
 if (command === 'use') {
-  // Parse position-agnostic: strip --agent-teams from the args list, whatever
-  // position it appears in, then take the first remaining non-flag word as the
-  // team name.
+  // Parse position-agnostic: strip flags from the args list, whatever position
+  // they appear in, then take the first remaining non-flag word as the team name.
   const agentTeamsFlag = args.includes('--agent-teams');
-  const useArgs = args.slice(1).filter((a) => a !== '--agent-teams');
-  const teamName = useArgs[0];
 
-  if (!teamName) {
-    console.error('Usage: ccteams use [--agent-teams] <team-name>');
+  // --profile <name> or --profile=<name>, anywhere in the arg list.
+  let profile = 'balanced';
+  const rest = [];
+  for (let i = 1; i < args.length; i++) {
+    const a = args[i];
+    if (a === '--agent-teams') continue;
+    if (a === '--profile') {
+      profile = args[++i]; // may be undefined — validated by useTeam
+      continue;
+    }
+    if (a.startsWith('--profile=')) {
+      profile = a.slice('--profile='.length);
+      continue;
+    }
+    rest.push(a);
+  }
+  const teamName = rest[0];
+
+  if (!teamName || !profile) {
+    console.error('Usage: ccteams use [--agent-teams] [--profile budget|balanced|max] <team-name>');
     process.exit(1);
   }
 
-  const result = useTeam(teamName, process.cwd(), { agentTeams: agentTeamsFlag });
+  const result = useTeam(teamName, process.cwd(), { agentTeams: agentTeamsFlag, profile });
   if (!result.success) {
     console.error(`Error: ${result.message}`);
     process.exit(1);
@@ -198,6 +214,7 @@ Usage:
   ccteams list --json                 Machine-readable JSON list (for scripts/slash commands)
   ccteams use <team>                  Apply a team to the current project
   ccteams use <team> --agent-teams    Apply a team AND enable agent-teams mode
+  ccteams use <team> --profile <p>    Apply a team with a model profile (see below)
   ccteams current                     Show the currently-applied team
   ccteams upgrade                     Upgrade ccteams to the latest npm version
   ccteams --version                   Print the ccteams version
@@ -206,6 +223,20 @@ Flags:
   --agent-teams   Enable CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 in .claude/settings.json
                   for the applied team. Position-agnostic: works before or after <team>.
                   Teams that declare "requiresAgentTeams" set this automatically.
+  --profile <p>   Remap each agent's model at apply time. Teams ship with sonnet on the
+                  execution tier (builders) and opus on the judgment tier (reviewers,
+                  architects). Profiles:
+                    budget    haiku builders, sonnet reviewers — cheapest
+                    balanced  ship defaults (sonnet/opus) — the default
+                    max       opus everywhere — highest quality
+
+Hooks:
+  Every stack-specific team bundles deterministic check hooks: scripts placed in
+  .claude/hooks/ and wired into .claude/settings.json (PostToolUse). They grep every
+  edit for the team's known failure patterns and feed findings straight back to the
+  agent — enforcement instead of prompt-level asking. Removed cleanly on team switch;
+  your own hooks in settings.json are never touched. (generalist/debug/research are
+  stack-agnostic and ship none — their rules are judgment calls, not grep patterns.)
 
 Agent teams mode:
   By default a team is orchestrated: one lead delegates to members one at a time,
@@ -217,6 +248,7 @@ Agent teams mode:
 Examples:
   ccteams list
   ccteams use frontend
+  ccteams use next-ts --profile budget
   ccteams use go-api --agent-teams
   ccteams use --agent-teams rails
   ccteams current

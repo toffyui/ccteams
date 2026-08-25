@@ -28,6 +28,16 @@ order matches visual order) — no keyboard walkthrough, send it back; it was re
 element with a visible focus state, and new CSS reuses existing tokens rather than
 inventing literals.
 
+## Deterministic hooks (installed with this team)
+A PostToolUse hook (`.claude/hooks/ccteams-frontend-check.mjs`) greps every edited
+file for the playbook's mechanical failure patterns — `onClick` on div/span,
+`<img>` without `alt`, `outline: none` without a `:focus-visible` replacement,
+z-index escalation — and feeds findings back to the editing agent automatically.
+Treat hook feedback as a playbook gate: the builder fixes it in the same turn or
+states in its report why the flagged line is intentional; the reviewer confirms one
+or the other happened. The hook covers only grep-able rules — it does not replace
+the reviewer's keyboard walkthrough and responsive checks.
+
 ## Working method (mandatory — every agent on this team)
 
 The full method is installed at `.claude/skills/working-method/SKILL.md`; read it

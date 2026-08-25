@@ -71,8 +71,9 @@ ccteams list                      # All teams (compact, one line each)
 ccteams list --details            # Full descriptions and tags
 ccteams list --json               # Machine-readable JSON
 ccteams use <team>                # Apply a team to the current project
+ccteams use <team> --profile <p>  # Apply it with a model profile: budget | balanced | max
 ccteams use <team> --agent-teams  # Apply it AND enable agent-teams mode (optional)
-ccteams current                   # Show the currently active team
+ccteams current                   # Show the currently active team and profile
 ccteams --version                 # Print the version
 ```
 
@@ -89,6 +90,8 @@ After `ccteams use`, **restart Claude Code** so the team loads (see below).
 ## Available teams
 
 ccteams ships with these teams out of the box. Each is a builder + reviewer pair (except `research`, which is a single read-only researcher), and every team bundles a **domain playbook skill** (`<team>-playbook`) — an operational distillation of frontier-model working discipline for that stack: an operating loop, a failure catalog (symptom → wrong instinct → correct move), discriminating checks, decision trees, a verification recipe, and a reviewer hunt list. Agents are instructed to read their playbook as their first action, and the team's orchestration rules gate reports against it.
+
+Every stack-specific team also bundles **deterministic check hooks** for its playbook's grep-able rules (see **Deterministic hooks** below).
 
 | Team             | What it's for                                                                                                                                      |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -128,10 +131,11 @@ When you apply a team with `ccteams use <team>` or `/ccteams:use-team <team>`:
 3. A user-owned `.claude/skills/team-lessons/SKILL.md` is scaffolded **once** if absent. This file is yours: ccteams never tracks, overwrites, or deletes it, so it survives team switches, re-applies, and package updates. (The name `team-lessons` is reserved — teams cannot ship a skill under it.)
 4. A `.claude/active-team.md` file is created, documenting the active team and its purpose.
 5. Your project's `.claude/CLAUDE.md` is updated with an import statement (`@.claude/active-team.md`) to include the team's orchestration rules.
-6. A `.claude/.ccteams-manifest.json` is written to track which team is active and allow clean switching.
-7. If you pass `--agent-teams` (or the team opts in via `"requiresAgentTeams": true`), `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` is set in `.claude/settings.json`. This is optional — without it, the team runs in the normal orchestrated mode.
+6. If the team bundles hooks (see **Deterministic hooks** below), the check scripts are copied into `.claude/hooks/` and wired into `.claude/settings.json`. Your own hook entries are never touched, and ccteams' entries are removed cleanly on team switch.
+7. A `.claude/.ccteams-manifest.json` is written to track which team is active and allow clean switching.
+8. If you pass `--agent-teams` (or the team opts in via `"requiresAgentTeams": true`), `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` is set in `.claude/settings.json`. This is optional — without it, the team runs in the normal orchestrated mode.
 
-ccteams includes a **collision guard**: it will refuse to apply a team if any of its agents or skills share a filename with files you've written by hand in `.claude/agents/` or `.claude/skills/`. This prevents accidental overwrites.
+ccteams includes a **collision guard**: it will refuse to apply a team if any of its agents, skills, or hook scripts share a filename with files you've written by hand in `.claude/agents/`, `.claude/skills/`, or `.claude/hooks/`. This prevents accidental overwrites.
 
 ## The working-method skill
 
@@ -153,16 +157,54 @@ Playbooks are living documents: the working method's learning loop instructs the
 - **Project-specific lessons** go into `.claude/skills/team-lessons/SKILL.md` — the user-owned file ccteams scaffolds once and never touches again. It survives team switches and package updates, and the orchestrator injects its entries into delegations alongside playbook rules. (Never put lessons in the playbook copies themselves — those are replaced on every `ccteams use`.)
 - **Universal lessons** — true for the stack in any project — belong upstream: open a PR against the team's playbook in this repo, and every user's team gains the immunity on the next release.
 
-## Per-agent model presets
+## Deterministic hooks — enforcement, not asking
+
+Playbook rules live at the prompt level: the model reads them and (usually) follows them — but prompt adherence degrades as context grows. For rules that are mechanically checkable, every stack-specific team also ships **Claude Code hooks**: small scripts that run automatically after every `Edit`/`Write` and grep the changed file for the team's known failure patterns. Findings are fed straight back to the agent as tool feedback (the user never has to notice), so the agent fixes them in the same turn — enforcement instead of asking.
+
+Every stack-specific team bundles a PostToolUse check covering its playbook's grep-able rules:
+
+| Team             | Checks (each playbook's mechanically-detectable failure patterns)                                                                                    |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `next-ts`        | route-level `"use client"`, non-`NEXT_PUBLIC_` env in client files, `useEffect`+`fetch` initial loads, `fetch()` without cache intent, `@ts-ignore`/`as any` |
+| `go-api`         | `http.Error` without `return`, `fmt.Errorf` with `%v` instead of `%w`, errors discarded with `_`, `context.Background()` mid-request                    |
+| `python-fastapi` | bare `except:`, Pydantic v1 API (`@validator`/`parse_obj`/`.dict()`), mutable default args, blocking `time.sleep`/`requests.*` in async modules         |
+| `rails`          | SQL interpolation in `where`, `update_attribute`/`update_column`, `save(validate: false)`, `default_scope`, params mass-assignment, `Time.now`/`Date.today` |
+| `django`         | naive `datetime.now()`, `fields = '__all__'`, injection-prone `.raw()`/`.extra()`, bare `except:`, `post_save` signals                                  |
+| `react-native`   | `.map` inside `ScrollView`, index as key, DOM APIs (`localStorage`/`document.*`), unconditional `behavior="padding"`, inline `renderItem` without `useCallback` |
+| `frontend`       | `onClick` on div/span, `<img>` without `alt`, `outline: none` without `:focus-visible`, z-index escalation                                              |
+
+The stack-agnostic teams (`generalist`, `debug`, `research`) ship no hooks — their rules are judgment calls (hypothesis discipline, scope control) with no fixed textual pattern to grep for, so they stay at the prompt layer by design.
+
+Ownership rules:
+
+- Hook scripts are placed in `.claude/hooks/` (always named `ccteams-*`) and the matching entries are merged into `.claude/settings.json`.
+- On team switch, ccteams removes **exactly its own** entries (identified by the `.claude/hooks/ccteams-` path in the command) and scripts. Hooks you wrote yourself are never touched.
+- Hooks load at session start — the restart-after-`use` rule applies to them too.
+
+## Model profiles and per-agent presets
 
 Every bundled agent ships with a `model:` set in its frontmatter, assigned by how much reasoning the role needs:
 
-- **`opus`** — planning, design, review, and research roles (scope-planner, architect, all `*-reviewer` agents, advisors, the researcher).
-- **`sonnet`** — mechanical implementation roles (all `*-builder` agents and the shipper).
+- **`opus`** — the judgment tier: planning, design, review, and research roles (scope-planner, architect, all `*-reviewer` agents, advisors, the researcher).
+- **`sonnet`** — the execution tier: mechanical implementation roles (all `*-builder` agents and the shipper).
 
-The lead session's own model isn't set by ccteams — pick it with `/model` in Claude Code. A common setup is a top-tier orchestrator (e.g. Fable 5) delegating to these Opus/Sonnet subagents, so the expensive model only plans and synthesizes while cheaper models do the work.
+`--profile` remaps both tiers at apply time, so you can move the whole team up or down the cost curve without editing files:
 
-**Changing the presets.** The `model:` line is just agent frontmatter — edit any `.claude/agents/*.md` to repin (`opus`, `sonnet`, `haiku`, or a full model ID), or delete the line to have that agent inherit the session's model. If your plan doesn't include Opus, either repin the `opus` agents to a model you have or remove the line so they fall back to your session model.
+| Profile             | Execution tier | Judgment tier | When                                                                |
+| ------------------- | -------------- | ------------- | ------------------------------------------------------------------- |
+| `budget`            | haiku          | sonnet        | High-volume routine work; cheapest that still keeps a review gate.  |
+| `balanced` (default)| sonnet         | opus          | The shipped defaults — right for most work.                         |
+| `max`               | opus           | opus          | Hard problems where builder quality matters more than cost.         |
+
+```bash
+ccteams use next-ts --profile budget
+```
+
+The profile is recorded in the manifest and shown by `ccteams current`. Re-run `ccteams use` with a different profile to switch.
+
+The lead session's own model isn't set by ccteams — pick it with `/model` in Claude Code. A common setup is a top-tier orchestrator delegating to these subagents, so the expensive model only plans and synthesizes while cheaper models do the work.
+
+**Manual repinning.** The `model:` line is just agent frontmatter — edit any `.claude/agents/*.md` to repin (`opus`, `sonnet`, `haiku`, or a full model ID), or delete the line to have that agent inherit the session's model. (Note that re-running `ccteams use` rewrites these files from the shipped defaults plus the chosen profile.)
 
 ## Committing `.claude/` — your choice
 
@@ -188,9 +230,13 @@ teams/<name>/
 │   ├── agent1.md           # YAML frontmatter + agent system prompt
 │   ├── agent2.md
 │   └── ...
-└── skills/                 # Optional: team-specific skills
-    └── my-skill/
-        └── SKILL.md
+├── skills/                 # Optional: team-specific skills
+│   └── my-skill/
+│       └── SKILL.md
+└── hooks/                  # Optional: deterministic checks (see Deterministic hooks)
+    ├── hooks.json          # settings.json-shaped hook config (event → matcher entries)
+    └── scripts/
+        └── ccteams-*.mjs   # Check scripts; the ccteams- prefix is required
 ```
 
 ### `team.json` schema

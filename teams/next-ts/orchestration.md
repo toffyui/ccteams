@@ -28,6 +28,16 @@ justified; every `fetch` carries explicit cache intent (no implicit 14-vs-15 def
 the reviewer ran `next build` (not just `tsc`) and quotes its output — no build run,
 send it back.
 
+## Deterministic hooks (installed with this team)
+A PostToolUse hook (`.claude/hooks/ccteams-next-check.mjs`) greps every edited file
+for the playbook's mechanical failure patterns — route-level `"use client"`, client
+env leaks, `useEffect`+`fetch` initial loads, implicit fetch caching, `@ts-ignore`/
+`as any` — and feeds findings back to the editing agent automatically. Treat hook
+feedback as a playbook gate: the builder fixes it in the same turn or states in its
+report why the flagged line is intentional; the reviewer confirms one or the other
+happened. The hook covers only grep-able rules — it does not replace the reviewer's
+boundary tracing or build run.
+
 ## Working method (mandatory — every agent on this team)
 
 The full method is installed at `.claude/skills/working-method/SKILL.md`; read it

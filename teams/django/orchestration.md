@@ -40,6 +40,16 @@ reports to the playbook's gates:
 - The verification recipe's real command output is pasted (`check`, migration check,
   tests, lint) — a summary is not verification.
 
+## Deterministic hooks (installed with this team)
+A PostToolUse hook (`.claude/hooks/ccteams-django-check.mjs`) greps every edited file
+for the playbook's mechanical failure patterns — naive `datetime.now()`,
+`fields = '__all__'`, injection-prone `.raw()`/`.extra()`, bare `except:`,
+`post_save` signals — and feeds findings back to the editing agent automatically.
+Treat hook feedback as a playbook gate: the builder fixes it in the same turn or
+states in its report why the flagged line is intentional; the reviewer confirms one
+or the other happened. The hook covers only grep-able rules — it does not replace
+the reviewer's N+1/permission analysis or the migration check.
+
 ## Working method (mandatory — every agent on this team)
 
 The full method is installed at `.claude/skills/working-method/SKILL.md`; read it
