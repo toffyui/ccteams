@@ -64,8 +64,19 @@ async function main() {
   for await (const c of process.stdin) chunks.push(c);
   const input = JSON.parse(Buffer.concat(chunks).toString('utf8'));
 
+  // A matched Edit/Write payload always carries tool_input.file_path today.
+  // If it comes back missing, that is not "irrelevant file" — our schema
+  // assumption broke (hook input format drift). Exit 1: Claude Code surfaces
+  // stderr of non-2 errors to the user, so drift is loud instead of a silent
+  // no-op. Internal script errors still fail silent (catch -> exit 0) below.
   const filePath = input?.tool_input?.file_path;
-  if (!filePath || !CHECKED_EXT.test(filePath) || SKIP_PATH.test(filePath)) return;
+  if (typeof filePath !== 'string' || filePath.length === 0) {
+    process.stderr.write(
+      'ccteams django check: hook payload had no tool_input.file_path — the hook input schema may have changed; checks are not running.\n',
+    );
+    process.exit(1);
+  }
+  if (!CHECKED_EXT.test(filePath) || SKIP_PATH.test(filePath)) return;
 
   const fs = await import('fs');
   if (!fs.existsSync(filePath)) return;
